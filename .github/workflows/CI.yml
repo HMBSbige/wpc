@@ -1,0 +1,72 @@
+name: CI
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+env:
+  ProjectName: wpc
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rid:
+          - win-x64
+          - win-x86
+    env:
+      NET_TFM: net6.0
+      Configuration: Release
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 6.0.x
+
+      - name: Build .NET App
+        shell: pwsh
+        run: .\build.ps1 ${{ matrix.rid }}
+
+      - name: Upload .NET App
+        continue-on-error: true
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.ProjectName }}-${{ matrix.rid }}
+          path: ${{ env.ProjectName }}/bin/${{ env.Configuration }}/${{ env.NET_TFM }}/${{ matrix.rid }}/publish/
+
+      - name: Get tag
+        if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
+        id: tag
+        uses: dawidd6/action-get-tag@v1
+
+      - name: Package
+        if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Path C:\builtfiles -Force > $null
+          $zip_path = "C:\builtfiles\$env:ProjectName-${{ matrix.rid }}-${{ steps.tag.outputs.tag }}.7z"
+          7z a -mx9 "$zip_path" ".\$env:ProjectName\bin\$env:Configuration\$env:NET_TFM\win-x64\publish\"
+          7z rn "$zip_path" publish $env:ProjectName
+
+      - name: Changelog
+        uses: glennawatson/ChangeLog@v1
+        if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
+        id: changelog
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: ${{ steps.changelog.outputs.commitLog }}
+          draft: true
+          prerelease: false
+          allowUpdates: true
+          replacesArtifacts: false
+          artifacts: C:\builtfiles\*
