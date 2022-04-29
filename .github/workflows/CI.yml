@@ -52,7 +52,7 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Path ~/builtfiles -Force > $null
-          $zip_path = "~/builtfiles/$env:ProjectName-${{ matrix.rid }}-${{ steps.tag.outputs.tag }}.7z"
+          $zip_path = "./builtfiles/$env:ProjectName-${{ matrix.rid }}-${{ steps.tag.outputs.tag }}.7z"
           7z a -mx9 "$zip_path" "./$env:ProjectName/bin/$env:Configuration/$env:NET_TFM/${{ matrix.rid }}/publish/"
           7z rn "$zip_path" publish $env:ProjectName
 
@@ -71,4 +71,4 @@ jobs:
           prerelease: false
           allowUpdates: true
           replacesArtifacts: false
-          artifacts: ~/builtfiles/*
+          artifacts: ./builtfiles/*
