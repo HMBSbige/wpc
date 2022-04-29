@@ -14,6 +14,8 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     strategy:
       matrix:
         rid:
@@ -67,7 +69,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: ${{ steps.changelog.outputs.commitLog }}
-          draft: true
+          draft: false
           prerelease: false
           allowUpdates: true
           replacesArtifacts: false
