@@ -51,9 +51,9 @@ jobs:
         if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Path C:\builtfiles -Force > $null
-          $zip_path = "C:\builtfiles\$env:ProjectName-${{ matrix.rid }}-${{ steps.tag.outputs.tag }}.7z"
-          7z a -mx9 "$zip_path" ".\$env:ProjectName\bin\$env:Configuration\$env:NET_TFM\win-x64\publish\"
+          New-Item -ItemType Directory -Path ~/builtfiles -Force > $null
+          $zip_path = "~/builtfiles/$env:ProjectName-${{ matrix.rid }}-${{ steps.tag.outputs.tag }}.7z"
+          7z a -mx9 "$zip_path" "./$env:ProjectName/bin/$env:Configuration/$env:NET_TFM/${{ matrix.rid }}/publish/"
           7z rn "$zip_path" publish $env:ProjectName
 
       - name: Changelog
@@ -71,4 +71,4 @@ jobs:
           prerelease: false
           allowUpdates: true
           replacesArtifacts: false
-          artifacts: C:\builtfiles\*
+          artifacts: ~/builtfiles/*
