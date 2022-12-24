@@ -10,7 +10,7 @@ if (!OperatingSystem.IsWindows())
 	return 1;
 }
 
-Argument urlArgument = new(@"url");
+Argument<string> urlArgument = new(@"url");
 
 string defaultBypass = string.Join(@";", ProxyService.LanIp);
 Option<string> bypassOption = new(@"--bypass", () => defaultBypass);
