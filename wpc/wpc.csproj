@@ -6,9 +6,9 @@
     <LangVersion>latest</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>1.1.0</Version>
-    <FileVersion>1.1.0.0</FileVersion>
     <Copyright>Copyright © 2022-2023 HMBSbige</Copyright>
+    <Version>1.2.0</Version>
+    <FileVersion>1.2.0.0</FileVersion>
     <Authors>HMBSbige</Authors>
   </PropertyGroup>
 
