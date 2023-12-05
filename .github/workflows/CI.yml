@@ -21,7 +21,7 @@ jobs:
         rid:
           - win-x64
     env:
-      NET_TFM: net7.0
+      NET_TFM: net8.0
       Configuration: Release
     steps:
       - name: Checkout code
@@ -30,7 +30,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 7.0.x
+          dotnet-version: 8.0.x
 
       - name: Build .NET App
         shell: pwsh
