@@ -35,7 +35,7 @@ internal static class CommandHandlers
 	public static int Global(ParseResult parseResult)
 	{
 		string url = parseResult.GetValue<string>("url")!;
-		string bypass = parseResult.GetValue<string>("bypass")!;
+		string bypass = parseResult.GetValue<string>("--bypass")!;
 		using ProxyService service = new()
 		{
 			Server = url,
