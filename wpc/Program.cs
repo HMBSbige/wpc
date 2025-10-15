@@ -1,6 +1,4 @@
 global using System.CommandLine;
-global using System.CommandLine.Invocation;
-global using System.CommandLine.NamingConventionBinder;
 global using WindowsProxy;
 global using wpc;
 
@@ -13,8 +11,11 @@ if (!OperatingSystem.IsWindows())
 Argument<string> urlArgument = new(@"url");
 
 string defaultBypass = string.Join(@";", ProxyService.LanIp);
-Option<string> bypassOption = new(@"--bypass", () => defaultBypass);
-bypassOption.AddAlias(@"-b");
+Option<string> bypassOption = new(@"--bypass")
+{
+	DefaultValueFactory = _ => defaultBypass
+};
+bypassOption.Aliases.Add(@"-b");
 
 Command queryCommand = new(Constants.QueryCommand);
 Command directCommand = new(Constants.DirectCommand);
@@ -29,9 +30,9 @@ RootCommand root = new()
 	globalCommand
 };
 
-queryCommand.Handler = CommandHandlers.Query();
-directCommand.Handler = CommandHandlers.Direct();
-pacCommand.Handler = CommandHandlers.Pac();
-globalCommand.Handler = CommandHandlers.Global();
+queryCommand.SetAction(CommandHandlers.Query);
+directCommand.SetAction(CommandHandlers.Direct);
+pacCommand.SetAction(CommandHandlers.Pac);
+globalCommand.SetAction(CommandHandlers.Global);
 
-return root.Invoke(args);
+return root.Parse(args).Invoke();
