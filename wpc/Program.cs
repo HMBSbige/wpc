@@ -8,19 +8,14 @@ if (!OperatingSystem.IsWindows())
 	return 1;
 }
 
-Argument<string> urlArgument = new(@"url");
-
-string defaultBypass = string.Join(@";", ProxyService.LanIp);
-Option<string> bypassOption = new(@"--bypass")
-{
-	DefaultValueFactory = _ => defaultBypass
-};
-bypassOption.Aliases.Add(@"-b");
-
 Command queryCommand = new(Constants.QueryCommand);
 Command directCommand = new(Constants.DirectCommand);
-Command pacCommand = new(Constants.PacCommand) { urlArgument };
-Command globalCommand = new(Constants.GlobalCommand) { urlArgument, bypassOption };
+Command pacCommand = new(Constants.PacCommand) { CommandHandlers.UrlArgument };
+Command globalCommand = new(Constants.GlobalCommand)
+{
+	CommandHandlers.UrlArgument,
+	CommandHandlers.BypassOption
+};
 
 RootCommand root = new()
 {

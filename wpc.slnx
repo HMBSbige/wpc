@@ -1,0 +1,11 @@
+﻿<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+    <File Path=".github\renovate.json" />
+    <File Path=".github\workflows\CI.yml" />
+  </Folder>
+  <Project Path="wpc\wpc.csproj" />
+</Solution>
