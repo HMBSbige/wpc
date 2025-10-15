@@ -3,54 +3,50 @@ namespace wpc;
 [System.Runtime.Versioning.SupportedOSPlatform(@"windows")]
 internal static class CommandHandlers
 {
-	public static ICommandHandler Query()
+	public static readonly Argument<string> UrlArgument = new(@"url");
+
+	public static readonly Option<string> BypassOption = new(@"--bypass", @"-b") { DefaultValueFactory = _ => string.Join(@";", ProxyService.LanIp) };
+
+	public static void Query(ParseResult parseResult)
 	{
-		return CommandHandler.Create(() =>
+		using ProxyService service = new();
+		ProxyStatus status = service.Query();
+		Console.WriteLine($@"IsDirect:       {status.IsDirect}");
+		Console.WriteLine($@"IsProxy:        {status.IsProxy}");
+		Console.WriteLine($@"IsAutoProxyUrl: {status.IsAutoProxyUrl}");
+		Console.WriteLine($@"IsAutoDetect:   {status.IsAutoDetect}");
+		Console.WriteLine($@"ProxyServer:    {status.ProxyServer}");
+		Console.WriteLine($@"ProxyBypass:    {status.ProxyBypass}");
+
+		if (!string.IsNullOrWhiteSpace(status.AutoConfigUrl))
 		{
-			using ProxyService service = new();
-			ProxyStatus status = service.Query();
-			Console.WriteLine($@"IsDirect: {status.IsDirect}");
-			Console.WriteLine($@"IsProxy: {status.IsProxy}");
-			Console.WriteLine($@"IsAutoProxyUrl: {status.IsAutoProxyUrl}");
-			Console.WriteLine($@"IsAutoDetect: {status.IsAutoDetect}");
-			Console.WriteLine($@"ProxyServer: {status.ProxyServer}");
-			Console.WriteLine($@"ProxyBypass: {status.ProxyBypass}");
-			Console.WriteLine($@"AutoConfigUrl: {status.AutoConfigUrl}");
-		});
+			Console.WriteLine($@"AutoConfigUrl:  {status.AutoConfigUrl}");
+		}
 	}
 
-	public static ICommandHandler Direct()
+	public static int Direct(ParseResult parseResult)
 	{
-		return CommandHandler.Create(() =>
-		{
-			using ProxyService service = new();
-			return ReturnResult(service.Direct());
-		});
+		using ProxyService service = new();
+		return ReturnResult(service.Direct());
 	}
 
-	public static ICommandHandler Pac()
+	public static int Pac(ParseResult parseResult)
 	{
-		return CommandHandler.Create((string url) =>
-		{
-			using ProxyService service = new()
-			{
-				AutoConfigUrl = url
-			};
-			return ReturnResult(service.Pac());
-		});
+		string url = parseResult.GetRequiredValue(UrlArgument);
+		using ProxyService service = new() { AutoConfigUrl = url };
+		return ReturnResult(service.Pac());
 	}
 
-	public static ICommandHandler Global()
+	public static int Global(ParseResult parseResult)
 	{
-		return CommandHandler.Create((string url, string bypass) =>
+		string url = parseResult.GetRequiredValue(UrlArgument);
+		string bypass = parseResult.GetRequiredValue(BypassOption);
+		using ProxyService service = new()
 		{
-			using ProxyService service = new()
-			{
-				Server = url,
-				Bypass = bypass
-			};
-			return ReturnResult(service.Global());
-		});
+			Server = url,
+			Bypass = bypass
+		};
+		return ReturnResult(service.Global());
 	}
 
 	private static int ReturnResult(bool result)
