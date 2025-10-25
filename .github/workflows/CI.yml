@@ -45,7 +45,7 @@ jobs:
         run: dotnet publish -r ${{ matrix.rid }} -p:PublishDir="C:/builtfiles/${{ matrix.rid }}"
 
       - name: Upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ env.ProjectName }}-${{ matrix.rid }}
           path: C:/builtfiles/${{ matrix.rid }}
