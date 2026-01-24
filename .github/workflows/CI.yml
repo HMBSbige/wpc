@@ -23,7 +23,7 @@ jobs:
         include:
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-            ext: exe
+            ext: ".exe"
           - os: macos-latest
             target: aarch64-apple-darwin
             ext: ""
@@ -32,13 +32,13 @@ jobs:
             ext: ""
     steps:
       - uses: actions/checkout@v6
-      - uses: Swatinem/rust-cache@v2
       - name: Install Rust
         run: |
           rustup set profile minimal
           rustup toolchain install stable --component clippy,rustfmt
           rustup target add ${{ matrix.target }}
           cargo install cargo-audit
+      - uses: Swatinem/rust-cache@v2
       - name: Format
         run: |
           cargo fmt -- --check
@@ -61,7 +61,7 @@ jobs:
     if: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/') }}
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v7
         with:
           path: artifacts
           merge-multiple: true
