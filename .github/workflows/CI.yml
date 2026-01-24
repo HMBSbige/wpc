@@ -32,13 +32,13 @@ jobs:
             ext: ""
     steps:
       - uses: actions/checkout@v6
+      - uses: Swatinem/rust-cache@v2
       - name: Install Rust
         run: |
           rustup set profile minimal
           rustup toolchain install stable --component clippy,rustfmt
           rustup target add ${{ matrix.target }}
           cargo install cargo-audit
-      - uses: Swatinem/rust-cache@v2
       - name: Format
         run: |
           cargo fmt -- --check
