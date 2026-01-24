@@ -81,6 +81,8 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
           artifactErrorsFailBuild: true
-          artifacts: artifacts/*
+          artifacts: release/*
           immutableCreate: true
+          updateOnlyUnreleased: true
