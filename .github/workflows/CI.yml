@@ -66,13 +66,21 @@ jobs:
         uses: actions/download-artifact@v7
         with:
           path: artifacts
-          merge-multiple: true
+      - name: Package Artifacts
+        run: |
+          mkdir -p release
+          for dir in artifacts/*/; do
+            folder_name=$(basename "$dir")
+            zip_file="release/${folder_name}.zip"
+            (
+              cd "$dir"
+              zip -r "../../$zip_file" .
+            )
+          done
       - name: Create Release
         uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
           artifactErrorsFailBuild: true
           artifacts: artifacts/*
           immutableCreate: true
-          updateOnlyUnreleased: true
